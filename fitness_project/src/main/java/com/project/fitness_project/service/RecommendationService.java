@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +20,28 @@ public class RecommendationService {
     private final RecommendationRepository recommendationRepository;
     private final ActivityRepository activityRepository;
     private final UserRepository userRepository;
-    public  RecommendationResponse generatRecommend(RecommendationRequest request) {
+        public  RecommendationResponse generatRecommend(RecommendationRequest request) {
          User user = userRepository.findById(request.getUserId())
         .orElseThrow(()-> new RuntimeException("Invalid User"+request.getUserId()));
+
+        Activity activity = activityRepository.findById(request.getActivityId())
+                .orElseThrow(()-> new RuntimeException("Invalid activityUser"+request.getActivityId()));
+        Recommendation recommendation = Recommendation.builder()
+                .user(user)
+                .activity(activity)
+                .improvements(request.getImprovements())
+                .suggestions(request.getSuggestions())
+                .safety(request.getSafety())
+                .build();
+
+        Recommendation savedRecommendation =
+                recommendationRepository.save(recommendation);
+
+        return mapToResponse(savedRecommendation);
+    }
+    public  RecommendationResponse generatRecommendForUser(String userId, RecommendationRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new RuntimeException("Invalid User"+userId));
 
         Activity activity = activityRepository.findById(request.getActivityId())
                 .orElseThrow(()-> new RuntimeException("Invalid activityUser"+request.getActivityId()));

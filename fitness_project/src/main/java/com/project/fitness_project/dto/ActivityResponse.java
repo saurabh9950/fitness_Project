@@ -10,15 +10,14 @@ import java.util.Map;
 @AllArgsConstructor
 public class ActivityResponse {
     private String id;
-    private String userid;
+    private String userId;
     private ActivityType type;
-    private Map<String,Object> additionalMetrix;
-    private Integer duretion;
-    private Integer caloriesburned;
+    private Map<String,Object> additionalMetrics;
+    private Integer duration;
+    private Integer caloriesBurned;
     private LocalDateTime startTime;
-    private LocalDateTime CreatedAt;
-    private LocalDateTime UpdatedAt;
-
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
 
 }

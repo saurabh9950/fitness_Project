@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RecommendationRequest {
-    private String UserId;
+    private String userId;
     private String activityId;
     private List<String> improvements;
     private List<String> suggestions;
