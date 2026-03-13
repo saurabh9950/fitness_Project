@@ -44,7 +44,7 @@ Git & GitHub
 
 Postman (API testing)
 
-Docker (optional)
+Docker 
 
 📂 Project Structure
 fitness_project
@@ -79,4 +79,5 @@ mvn spring-boot:run
 Or run the main class:
 
 FitnessProjectApplication.java
+
 
