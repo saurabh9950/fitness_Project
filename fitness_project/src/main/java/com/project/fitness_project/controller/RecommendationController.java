@@ -2,7 +2,6 @@ package com.project.fitness_project.controller;
 
 import com.project.fitness_project.dto.RecommendationRequest;
 import com.project.fitness_project.dto.RecommendationResponse;
-import com.project.fitness_project.model.Recommendation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import com.project.fitness_project.service.RecommendationService;
@@ -17,18 +16,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RecommendationController {
     private final RecommendationService recommendationService;
-    @PostMapping("/generate")
-        public ResponseEntity<RecommendationResponse> GenerateRecommend(@RequestBody RecommendationRequest request,
-                                                                        Authentication auth){
+        // STEP 1: Generate AI-like recommendation PREVIEW (not saved)
+        @PostMapping("/generate")
+        public ResponseEntity<RecommendationResponse> generatePreview(@RequestBody RecommendationRequest request,
+                                                                      Authentication auth){
             String userId = (String) auth.getPrincipal();
             return ResponseEntity.ok(recommendationService.generatRecommendForUser(userId, request));
-    }
+        }
+
+        // STEP 2: Save the accepted recommendation
+        @PostMapping
+        public ResponseEntity<RecommendationResponse> saveRecommendation(@RequestBody RecommendationRequest request,
+                                                                         Authentication auth){
+            String userId = (String) auth.getPrincipal();
+            return ResponseEntity.ok(recommendationService.saveRecommendationForUser(userId, request));
+        }
 
 
 
         @GetMapping("/User/{userId}")
-        public ResponseEntity<List<RecommendationResponse>> GetRecommend(@PathVariable String userId,
-                                                                         Authentication auth ){
+        public ResponseEntity<List<RecommendationResponse>> getRecommendationsForUser(@PathVariable String userId,
+                                                                                      Authentication auth ){
             String authUserId = (String) auth.getPrincipal();
             boolean isAdmin = auth.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
@@ -36,11 +44,21 @@ public class RecommendationController {
                 throw new AccessDeniedException("You are not allowed to view recommendations for this user");
             }
             return ResponseEntity.ok(recommendationService.getRecommend(userId));
-    }
+        }
     @GetMapping("/activity/{activityId}")
     public ResponseEntity<List<RecommendationResponse>> getRecommendActivity(
             @PathVariable("activityId") String activityId)
     {
         return ResponseEntity.ok(recommendationService.getRecommendActivity(activityId));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRecommendation(@PathVariable String id,
+                                                     Authentication auth) {
+        String userId = (String) auth.getPrincipal();
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        recommendationService.deleteForUser(id, userId, isAdmin);
+        return ResponseEntity.noContent().build();
     }
 }
